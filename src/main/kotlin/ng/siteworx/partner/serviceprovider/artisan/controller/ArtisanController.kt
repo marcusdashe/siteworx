@@ -2,9 +2,9 @@ package ng.siteworx.partner.serviceprovider.artisan.controller
 
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
-import ng.siteworx.partner.serviceprovider.artisan.dto.ArtisanDTO
-import ng.siteworx.partner.serviceprovider.artisan.dto.LoginDTO
-import ng.siteworx.partner.serviceprovider.artisan.model.Artisan
+import ng.siteworx.partner.dto.RegistrationDTO
+import ng.siteworx.partner.dto.LoginDTO
+import ng.siteworx.partner.service.AuthService
 import ng.siteworx.partner.serviceprovider.artisan.service.ArtisanService
 import ng.siteworx.partner.serviceprovider.sharedpayload.Message
 import org.springframework.http.ResponseEntity
@@ -15,12 +15,6 @@ import org.springframework.web.bind.annotation.*
 @CrossOrigin(origins = ["*"])
 @RequestMapping(value = ["/api/v1/artisan"])
 class ArtisanController(private val artisanService: ArtisanService) {
-
-    @PostMapping(value = ["/register", "/create", "/signup-", "/new"])
-    fun registerArtisan(@RequestBody payload: ArtisanDTO): ResponseEntity<Message> = this.artisanService.register(payload)
-
-    @PostMapping("/login")
-    fun login(@Valid @RequestBody payload: LoginDTO, response: HttpServletResponse): ResponseEntity<Message> = this.artisanService.login(payload, response)
 
     @GetMapping("/")
     fun fetchArtisan(@CookieValue("jwt") jwt: String): ResponseEntity<Message> = this.artisanService.artisan(jwt)
@@ -38,10 +32,10 @@ class ArtisanController(private val artisanService: ArtisanService) {
     fun fetchArtisanByUsername(@PathVariable("username") username: String): ResponseEntity<Message> = this.artisanService.getArtisanByUsername(username)
 
     @PostMapping("/self/update")
-    fun updateArtisan(@CookieValue("jwt") jwt: String, payload: ArtisanDTO): ResponseEntity<Message> = this.artisanService.selfUpdate(jwt, payload)
+    fun updateArtisan(@CookieValue("jwt") jwt: String, payload: RegistrationDTO): ResponseEntity<Message> = this.artisanService.selfUpdate(jwt, payload)
 
     @PutMapping("/admin/update/{id}")
-    fun adminUpdateArtisan(@PathVariable("id") id: String, payload: ArtisanDTO): ResponseEntity<Message> = this.artisanService.adminUpdate(id, payload)
+    fun adminUpdateArtisan(@PathVariable("id") id: String, payload: RegistrationDTO): ResponseEntity<Message> = this.artisanService.adminUpdate(id, payload)
 
     @DeleteMapping("/{id}")
     fun eraseArtisanByID(@PathVariable("id") id: String): ResponseEntity<Message> = this.artisanService.deleteByID(id)
@@ -49,9 +43,9 @@ class ArtisanController(private val artisanService: ArtisanService) {
     @DeleteMapping("/erase-artisan/{email}")
     fun eraseArtisanByEmail(@PathVariable("email") email: String): ResponseEntity<Message> = this.artisanService.deleteByEmail(email)
 
-    @GetMapping("/logout")
-    fun signout(response: HttpServletResponse): ResponseEntity<Message> = this.artisanService.logout(response)
-//
-//    GetMapping("/verify/{verifyslug}")
-//    fun verifyArtisan(@QueryParam("verifyslug" to verifyslug))
+    @GetMapping("/is-available/{id}")
+    fun isAvailable(@PathVariable("id") id: String): ResponseEntity<Boolean> = this.artisanService.isArtisanAvailable(id)
+
+    @GetMapping("/is-verified/{id}")
+    fun isVerified(@PathVariable("id") id: String): ResponseEntity<Boolean> = this.artisanService.isArtisanVerified(id)
 }
