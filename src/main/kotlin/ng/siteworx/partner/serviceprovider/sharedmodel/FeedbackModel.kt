@@ -3,7 +3,7 @@ package ng.siteworx.partner.serviceprovider.sharedmodel
 import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import ng.siteworx.partner.client.model.Client
-import ng.siteworx.partner.serviceprovider.artisan.constants.Constants
+import ng.siteworx.partner.enums.SiteworxEnums
 import ng.siteworx.partner.serviceprovider.artisan.model.Artisan
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
@@ -21,7 +21,7 @@ class FeedbackModel {
 
     @Column(name = "account_type", nullable = false)
     @Enumerated(EnumType.STRING)
-    var satisfactionType: Constants.SatisfactionType = Constants.SatisfactionType.NOT_SATISFY
+    var satisfactionType: SiteworxEnums.SatisfactionType = SiteworxEnums.SatisfactionType.NOT_SATISFY
 
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)

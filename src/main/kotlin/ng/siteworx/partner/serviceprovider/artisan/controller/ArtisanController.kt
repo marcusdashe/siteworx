@@ -31,6 +31,8 @@ class ArtisanController(private val artisanService: ArtisanService) {
     @GetMapping("/username/{username}")
     fun fetchArtisanByUsername(@PathVariable("username") username: String): ResponseEntity<Message> = this.artisanService.getArtisanByUsername(username)
 
+    @GetMapping("/artisan/profile")
+    fun fetchProfileOfArtisan(@CookieValue("jwt") jwt: String): ResponseEntity<Message> = this.artisanService.getArtisanProfile(jwt)
     @PostMapping("/self/update")
     fun updateArtisan(@CookieValue("jwt") jwt: String, payload: RegistrationDTO): ResponseEntity<Message> = this.artisanService.selfUpdate(jwt, payload)
 
@@ -47,5 +49,5 @@ class ArtisanController(private val artisanService: ArtisanService) {
     fun isAvailable(@PathVariable("id") id: String): ResponseEntity<Boolean> = this.artisanService.isArtisanAvailable(id)
 
     @GetMapping("/is-verified/{id}")
-    fun isVerified(@PathVariable("id") id: String): ResponseEntity<Boolean> = this.artisanService.isArtisanVerified(id)
+    fun isVerified(@PathVariable("id") id: String): ResponseEntity<Boolean> = this.artisanService.isVerifiedArtisan(id)
 }

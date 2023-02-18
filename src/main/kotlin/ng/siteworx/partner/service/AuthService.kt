@@ -6,6 +6,8 @@ import io.jsonwebtoken.io.Encoders
 import io.jsonwebtoken.security.Keys
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletResponse
+import ng.siteworx.partner.admin.Admin
+import ng.siteworx.partner.admin.AdminRepo
 import ng.siteworx.partner.client.model.Client
 import ng.siteworx.partner.client.repo.ClientRepo
 import ng.siteworx.partner.dto.LoginDTO
@@ -21,15 +23,19 @@ import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.ResponseEntity
 import org.springframework.mail.MailSendException
 import org.springframework.stereotype.Service
-import ng.siteworx.partner.enums.Constants
-import ng.siteworx.partner.enums.UserType
+import ng.siteworx.partner.enums.SiteworxEnums
 import ng.siteworx.partner.serviceprovider.artisan.service.ArtisanService
 import org.springframework.http.HttpStatus
 import java.util.*
 import javax.crypto.SecretKey
 
 @Service
-class AuthService(private val artisanRepo: ArtisanRepo, private val clientRepo: ClientRepo, private val emailService: EmailService, private val verifyTokenService: VerifyTokenService) {
+class AuthService(
+    private val artisanRepo: ArtisanRepo,
+    private val clientRepo: ClientRepo,
+    private val emailService: EmailService,
+    private val verifyTokenService: VerifyTokenService,
+    private val adminRepo: AdminRepo) {
     @Value("\${siteworx.ng.baseUrl}")
     private val baseURL: String? = null
 
@@ -40,18 +46,17 @@ class AuthService(private val artisanRepo: ArtisanRepo, private val clientRepo: 
 
     // Create new User
     fun register(payload: RegistrationDTO): ResponseEntity<Message> {
-
-        if (payload.password.isNullOrEmpty() && payload.password != payload.passwordConfirm) {
+        if (payload.password.isBlank() && payload.password != payload.passwordConfirm) {
             return ResponseEntity.badRequest().body(
                 Message(
                     false,
-                    "Either password is empty/null or password and passwordConfirm are not the same",
+                    "Either password is empty/null or password not equal to passwordConfirm",
                     null
                 )
             )
         }
         val result = when (payload.userType) {
-            UserType.ARTISAN -> {
+            SiteworxEnums.UserType.ARTISAN -> {
                 val artisan = Artisan()
                 artisan.firstName = payload.firstName
                 artisan.lastName = payload.lastName
@@ -74,7 +79,7 @@ class AuthService(private val artisanRepo: ArtisanRepo, private val clientRepo: 
                 }
             }
 
-            UserType.CLIENT -> {
+            SiteworxEnums.UserType.CLIENT -> {
                 val client: Client = Client()
                 client.firstName = payload.firstName
                 client.email = payload.email
@@ -102,7 +107,8 @@ class AuthService(private val artisanRepo: ArtisanRepo, private val clientRepo: 
 //    Login with Password, Email or Username
     fun login(payload: LoginDTO, response: HttpServletResponse): ResponseEntity<Message> {
         val user = this.artisanRepo.findByEmail(payload.email) ?: this.artisanRepo.findByUsername(payload.username) ?:
-                     this.clientRepo.findByEmail(payload.email) ?: this.clientRepo.findByUsername(payload.username)
+                     this.clientRepo.findByEmail(payload.email) ?: this.clientRepo.findByUsername(payload.username) ?:
+                     this.adminRepo.findByEmail(payload.email) ?: this.adminRepo.findByUsername(payload.username) ?: ""
 
         var result = when (user) {
             is Artisan -> {
@@ -134,6 +140,21 @@ class AuthService(private val artisanRepo: ArtisanRepo, private val clientRepo: 
                     ResponseEntity.ok().body(Message(true, "Login Successfully", user))
                 }
                 ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Message(false, "User not found", null))
+            }
+            is Admin -> {
+                if(!user.comparePassword(payload.password)) {
+                    ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Message(false, "Invalid Password",null))
+                } else {
+                    val issuer = user.id.toString()
+                    val jwt = Jwts.builder().setIssuer(issuer)
+                        .setExpiration(Date(System.currentTimeMillis() + 60 * 24 * 1000)) // a day
+                        .signWith(SignatureAlgorithm.HS512, secretString).compact()
+                    var cookie = Cookie("jwt", jwt)
+                    cookie.isHttpOnly = true
+                    response.addCookie(cookie)
+                    ResponseEntity.ok().body(Message(true, "Login Successfully", user))
+                }
+                ResponseEntity.ok().body(Message(false, "Unable to login successfully", user))
             }
             else -> {
                 ResponseEntity.ok().body(Message(true, "Unrecognized User"))

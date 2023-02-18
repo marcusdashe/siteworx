@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.Size
+import ng.siteworx.partner.enums.SiteworxEnums
 import ng.siteworx.partner.serviceprovider.sharedmodel.*
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import java.util.*
@@ -31,7 +32,7 @@ class Artisan() {
 
     @Column(name = "username", nullable = false, unique = true)
     @Size(max = 30)
-    @Size(min = 3, message = "Name must be between 3 and 30 characters")
+    @Size(min = 3, message = "Userame must be between 3 and 30 characters")
     var username: String? = null
 
     @Column(name = "verify", nullable = false)
@@ -42,6 +43,10 @@ class Artisan() {
 
     @Column(name = "subscribe", nullable = false)
     var hasSubscribe: Boolean = false
+
+    @Column(name = "subscription_level", nullable = false)
+    @Enumerated(EnumType.STRING)
+    var subscriptionLevel: SiteworxEnums.SubCategory = SiteworxEnums.SubCategory.FREE
 
     @Column(name = "password", nullable = false)
     var password: String = ""
@@ -65,8 +70,9 @@ class Artisan() {
     @OneToMany(mappedBy = "artisan", fetch = FetchType.LAZY, cascade = arrayOf(CascadeType.ALL))
     private val notification: Set<NotificationModel?> = setOf()
 
-    @OneToOne(mappedBy = "artisan", fetch = FetchType.LAZY, cascade = arrayOf(CascadeType.ALL))
-    private var profile: ProfileModel? = null
+//    @OneToOne(fetch = FetchType.LAZY, cascade = arrayOf(CascadeType.ALL))
+    @OneToOne(mappedBy = "artisan", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    var profile: Profile? = null
 
     @OneToOne(mappedBy = "artisan", fetch = FetchType.LAZY, cascade = arrayOf(CascadeType.ALL))
     private var contact: ContactModel? = null

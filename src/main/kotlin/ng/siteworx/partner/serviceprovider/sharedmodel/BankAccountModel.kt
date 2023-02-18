@@ -1,12 +1,9 @@
 package ng.siteworx.partner.serviceprovider.sharedmodel
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import ng.siteworx.partner.client.model.Client
-import ng.siteworx.partner.serviceprovider.artisan.constants.Constants
+import ng.siteworx.partner.enums.SiteworxEnums
 import ng.siteworx.partner.serviceprovider.artisan.model.Artisan
-import org.hibernate.annotations.OnDelete
-import org.hibernate.annotations.OnDeleteAction
 
 
 @Entity
@@ -27,7 +24,7 @@ class BankAccountModel {
 
     @Column(name = "account_type", nullable = false)
     @Enumerated(EnumType.STRING)
-    var accountType: Constants.AccountType = Constants.AccountType.SAVING
+    var accountType: SiteworxEnums.AccountType = SiteworxEnums.AccountType.SAVING
 
     @OneToOne(fetch = FetchType.LAZY, optional= false)
     @JoinColumn(name = "artisan_id")

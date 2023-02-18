@@ -1,7 +1,6 @@
 package ng.siteworx.partner.dto
 
-import ng.siteworx.partner.enums.UserType
-
+import ng.siteworx.partner.enums.SiteworxEnums
 
 data class RegistrationDTO(
     val firstName: String = "",
@@ -11,5 +10,5 @@ data class RegistrationDTO(
     val password: String = "",
     val passwordConfirm: String = "",
     val profession: String = "",
-    val userType: UserType = UserType.ARTISAN
+    val userType: SiteworxEnums.UserType = SiteworxEnums.UserType.ARTISAN
 )
