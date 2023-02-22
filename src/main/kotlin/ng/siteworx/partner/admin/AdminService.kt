@@ -2,6 +2,9 @@ package ng.siteworx.partner.admin
 
 import io.jsonwebtoken.Jwts
 import jakarta.servlet.http.HttpServletResponse
+import ng.siteworx.partner.application.AppInfoDTO
+import ng.siteworx.partner.application.ApplicationModel
+import ng.siteworx.partner.application.ApplicationRepo
 import ng.siteworx.partner.dto.LoginDTO
 import ng.siteworx.partner.service.AuthService
 import ng.siteworx.partner.serviceprovider.artisan.service.ArtisanService
@@ -15,7 +18,7 @@ class AdminService(private val applicationRepo: ApplicationRepo, private val aut
 
     fun adminLogin(payload: LoginDTO, response: HttpServletResponse): ResponseEntity<Message> = authService.login(payload, response)
 
-    fun getAppInfo(): ResponseEntity<ApplicationModel> = ResponseEntity(applicationRepo.findAll()[0], HttpStatus.OK)
+    fun fetchAppInfo(): ResponseEntity<ApplicationModel> = ResponseEntity(applicationRepo.findAll()[0], HttpStatus.OK)
 
     fun updateApplicationInfo(payload: AppInfoDTO, jwt: String): ResponseEntity<Message>{
         if(jwt.isBlank()){
@@ -23,7 +26,7 @@ class AdminService(private val applicationRepo: ApplicationRepo, private val aut
         }
         val body = Jwts.parser().setSigningKey(ArtisanService.secretString).parseClaimsJws(jwt).getBody()
         val appInfo = this.applicationRepo.findById(body.issuer.toLong())
-//        var appInfo: ApplicationModel = applicationRepo.findAll()[0]
+
         if(appInfo != null){
             when{
                 payload.appName.isNotBlank() -> appInfo.get().appName = payload.appName

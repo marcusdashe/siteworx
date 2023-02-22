@@ -77,8 +77,8 @@ class Artisan() {
     @OneToOne(mappedBy = "artisan", fetch = FetchType.LAZY, cascade = arrayOf(CascadeType.ALL))
     private var contact: ContactModel? = null
 
-    @OneToOne(mappedBy = "artisan", fetch = FetchType.LAZY, cascade = arrayOf(CascadeType.ALL))
-    private var account: BankAccountModel? = null
+    @OneToOne(mappedBy = "artisan", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    var account: BankAccountModel? = null
 
     fun comparePassword(password: String): Boolean{
         return BCryptPasswordEncoder().matches(password, this.password)

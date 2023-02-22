@@ -1,4 +1,4 @@
-package ng.siteworx.partner.admin
+package ng.siteworx.partner.application
 
 import jakarta.persistence.*
 import java.time.Instant

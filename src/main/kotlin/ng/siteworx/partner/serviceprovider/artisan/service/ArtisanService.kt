@@ -4,10 +4,7 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.io.Encoders
 import io.jsonwebtoken.security.Keys
-import jakarta.servlet.http.Cookie
-import jakarta.servlet.http.HttpServletResponse
 import ng.siteworx.partner.dto.RegistrationDTO
-import ng.siteworx.partner.dto.LoginDTO
 import ng.siteworx.partner.serviceprovider.artisan.model.Artisan
 import ng.siteworx.partner.serviceprovider.artisan.repo.ArtisanRepo
 import ng.siteworx.partner.serviceprovider.artisan.repo.ProfileRepo
@@ -15,10 +12,6 @@ import ng.siteworx.partner.serviceprovider.sharedmodel.Profile
 import ng.siteworx.partner.serviceprovider.sharedpayload.Message
 import ng.siteworx.partner.serviceprovider.sharedservices.EmailService
 import ng.siteworx.partner.serviceprovider.sharedservices.VerifyTokenService
-import ng.siteworx.partner.template.EmailTemplate.emailHtmlBody
-import ng.siteworx.partner.template.EmailTemplate.emailHtmlSubject
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.mail.MailSendException

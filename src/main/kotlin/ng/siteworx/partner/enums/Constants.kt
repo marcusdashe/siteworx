@@ -44,6 +44,7 @@ package ng.siteworx.partner.enums
         SAVING,
         CURRENT,
         DOMICILIARY,
+        OTHER
     }
     enum class SatisfactionType{
         SATISFY,

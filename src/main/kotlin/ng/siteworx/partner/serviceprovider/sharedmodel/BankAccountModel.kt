@@ -26,9 +26,9 @@ class BankAccountModel {
     @Enumerated(EnumType.STRING)
     var accountType: SiteworxEnums.AccountType = SiteworxEnums.AccountType.SAVING
 
-    @OneToOne(fetch = FetchType.LAZY, optional= false)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "artisan_id")
-    private var artisan: Artisan? = null
+    var artisan: Artisan? = null
 
     @OneToOne(fetch = FetchType.LAZY, optional= false)
     @JoinColumn(name = "client_id")
